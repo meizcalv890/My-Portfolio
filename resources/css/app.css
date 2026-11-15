@@ -1,0 +1,82 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+    --color-paper: #ffffff;
+    --color-paper-2: #f5f5f4;
+    --color-ink: #0a0a0a;
+    --color-muted: #6b6b6b;
+    --color-line: #e5e5e5;
+    --color-accent: #0a0a0a;
+
+    /* Halaman admin lama memakai kelas indigo: arahkan ke hitam-putih */
+    --color-indigo-50: #f5f5f5;
+    --color-indigo-100: #e5e5e5;
+    --color-indigo-500: #404040;
+    --color-indigo-600: #0a0a0a;
+    --color-indigo-700: #262626;
+}
+
+@keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}
+
+@layer base {
+    html { scroll-behavior: smooth; }
+    body { @apply bg-paper font-sans text-ink antialiased; }
+    h1, h2, h3, h4 { font-family: var(--font-sans); letter-spacing: -0.02em; }
+    ::selection { background: var(--color-ink); color: #fff; }
+    :focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+}
+
+@layer components {
+    .kicker {
+        @apply font-mono text-xs uppercase tracking-[0.18em] text-muted;
+    }
+    .label {
+        @apply block font-mono text-xs uppercase tracking-widest text-muted;
+    }
+    .section-title {
+        @apply text-4xl font-semibold leading-[1.05] tracking-tighter text-balance md:text-6xl;
+    }
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition duration-200;
+    }
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-paper transition duration-200 hover:bg-neutral-700;
+    }
+    .btn-outline {
+        @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink px-6 py-3 text-sm font-semibold text-ink transition duration-200 hover:bg-ink hover:text-paper;
+    }
+    .input {
+        @apply w-full border-0 border-b border-current/30 bg-transparent px-0 py-2.5 text-base transition focus:border-current focus:outline-none focus:ring-0;
+    }
+    .field {
+        @apply mt-1 w-full border border-line bg-white px-3 py-2 text-sm focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/10;
+    }
+    .tag {
+        @apply inline-flex border border-line px-2.5 py-0.5 font-mono text-[11px] text-muted;
+    }
+    .nav-link {
+        @apply border-b-2 border-transparent py-1 font-mono text-xs uppercase tracking-widest text-muted transition hover:text-ink;
+    }
+    .nav-link[aria-current='true'] {
+        @apply border-ink text-ink;
+    }
+    .rise { animation: rise .7s ease-out both; }
+    .rise-2 { animation: rise .7s .1s ease-out both; }
+    .rise-3 { animation: rise .7s .2s ease-out both; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rise, .rise-2, .rise-3 { animation: none; }
+}
