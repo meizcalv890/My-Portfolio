@@ -5,12 +5,29 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Skill;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 
 class SkillController extends Controller
 {
     private function rules(): array
     {
-        return ['name' => 'required|max:80', 'level' => 'required|integer|min:1|max:100'];
+        return [
+            'name' => 'required|max:80',
+            'level' => 'required|integer|min:1|max:100',
+            'icon_slug' => ['nullable', 'max:60', 'regex:/^[a-z0-9]+$/'],
+            'icon' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:1024',
+            'remove_icon' => 'nullable|boolean',
+        ];
+    }
+
+    private function normalizeSlug(Request $request): void
+    {
+        $request->merge([
+            'icon_slug' => $request->filled('icon_slug')
+                ? strtolower(trim($request->input('icon_slug')))
+                : null,
+        ]);
     }
 
     public function index()
@@ -20,7 +37,16 @@ class SkillController extends Controller
 
     public function store(Request $request)
     {
-        Skill::create($request->validate($this->rules()));
+        $this->normalizeSlug($request);
+        $data = $request->validate($this->rules());
+
+        $attrs = Arr::only($data, ['name', 'level', 'icon_slug']);
+        if ($request->hasFile('icon')) {
+            $attrs['icon'] = $request->file('icon')->store('skills', 'public');
+        }
+
+        Skill::create($attrs);
+
         return back()->with('success', 'Skill ditambahkan');
     }
 
@@ -31,13 +57,33 @@ class SkillController extends Controller
 
     public function update(Request $request, Skill $skill)
     {
-        $skill->update($request->validate($this->rules()));
+        $this->normalizeSlug($request);
+        $data = $request->validate($this->rules());
+
+        $attrs = Arr::only($data, ['name', 'level', 'icon_slug']);
+
+        if ($request->hasFile('icon')) {
+            if ($skill->icon) {
+                Storage::disk('public')->delete($skill->icon);
+            }
+            $attrs['icon'] = $request->file('icon')->store('skills', 'public');
+        } elseif ($request->boolean('remove_icon') && $skill->icon) {
+            Storage::disk('public')->delete($skill->icon);
+            $attrs['icon'] = null;
+        }
+
+        $skill->update($attrs);
+
         return redirect()->route('admin.skills.index')->with('success', 'Skill diperbarui');
     }
 
     public function destroy(Skill $skill)
     {
+        if ($skill->icon) {
+            Storage::disk('public')->delete($skill->icon);
+        }
         $skill->delete();
+
         return back()->with('success', 'Skill dihapus');
     }
 }

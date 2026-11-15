@@ -17,6 +17,7 @@
 </head>
 
 <body class="min-h-screen">
+  <div id="progress" class="progress" aria-hidden="true"></div>
   @php
   $links = [
   ['Proyek', route('home') . '#proyek'],
@@ -95,6 +96,15 @@
       <a href="#" class="hover:text-ink">Ke atas &uarr;</a>
     </div>
   </footer>
+
+  <div id="cursor-label" class="cursor-label" aria-hidden="true">Lihat</div>
+
+  <a href="#" id="to-top" aria-label="Kembali ke atas" data-show="false"
+    class="fixed bottom-5 right-5 z-40 grid h-11 w-11 place-items-center rounded-full bg-ink text-paper opacity-0 pointer-events-none transition hover:bg-neutral-700 data-[show=true]:pointer-events-auto data-[show=true]:opacity-100">&uarr;</a>
+
+  <dialog id="lightbox" class="m-auto max-h-[92vh] max-w-[94vw] border border-ink bg-white p-0 backdrop:bg-black/80">
+    <img id="lightbox-img" alt="" class="block max-h-[90vh] max-w-[92vw] object-contain">
+  </dialog>
 </body>
 
 </html>

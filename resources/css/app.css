@@ -16,7 +16,7 @@
     --color-line: #e5e5e5;
     --color-accent: #0a0a0a;
 
-    /* Halaman admin lama memakai kelas indigo: arahkan ke hitam-putih */
+    /* Warna indigo masih dipakai di beberapa halaman admin */
     --color-indigo-50: #f5f5f5;
     --color-indigo-100: #e5e5e5;
     --color-indigo-500: #404040;
@@ -27,6 +27,11 @@
 @keyframes rise {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: none; }
+}
+
+@keyframes word-up {
+    from { transform: translateY(105%); }
+    to { transform: none; }
 }
 
 @layer base {
@@ -71,12 +76,91 @@
     .nav-link[aria-current='true'] {
         @apply border-ink text-ink;
     }
+
+    /* animasi muncul saat halaman dibuka */
     .rise { animation: rise .7s ease-out both; }
     .rise-2 { animation: rise .7s .1s ease-out both; }
     .rise-3 { animation: rise .7s .2s ease-out both; }
+
+    /* judul nama: kata naik satu per satu */
+    .word {
+        display: inline-block;
+        overflow: hidden;
+        vertical-align: top;
+        padding-bottom: .12em;
+        margin-bottom: -.12em;
+    }
+    .word > span {
+        display: inline-block;
+        animation: word-up .9s cubic-bezier(.2, .7, .2, 1) both;
+        animation-delay: var(--d, 0s);
+    }
+
+    /* Efek saat elemen masuk ke layar */
+    .reveal {
+        transform: translateY(28px);
+        transition: transform .8s cubic-bezier(.2, .7, .2, 1) var(--d, 0s);
+    }
+    .reveal.in { transform: none; }
+
+    /* bilah progres scroll */
+    .progress {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        z-index: 60;
+        height: 3px;
+        background: var(--color-ink);
+        transform-origin: left;
+        transform: scaleX(var(--p, 0));
+    }
+
+    /* foto hero miring mengikuti kursor */
+    .tilt {
+        transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+        transition: transform .25s ease-out;
+        will-change: transform;
+    }
+
+    /* label yang mengikuti kursor */
+    .cursor-label {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 70;
+        display: grid;
+        place-items: center;
+        width: 76px;
+        height: 76px;
+        margin: -38px 0 0 -38px;
+        border-radius: 9999px;
+        background: var(--color-ink);
+        color: var(--color-paper);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        pointer-events: none;
+        opacity: 0;
+        scale: .4;
+        transition: opacity .2s, scale .2s;
+    }
+    .cursor-label.on { opacity: 1; scale: 1; }
+
+    /* logo skill: abu-abu, berwarna saat di-hover */
+    .logo-img { transition: filter .3s, opacity .3s, transform .3s; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    [data-cursor] { cursor: none; }
+    .logo-img { filter: grayscale(1); opacity: .8; }
+    .skill-tile:hover .logo-img { filter: none; opacity: 1; transform: scale(1.12); }
 }
 
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .rise, .rise-2, .rise-3 { animation: none; }
+    .rise, .rise-2, .rise-3, .word > span { animation: none; }
+    .reveal { transform: none; transition: none; }
+    .tilt { transform: none !important; }
 }

@@ -14,6 +14,7 @@ class Experience extends Model
         'start_date',
         'end_date',
         'description',
+        'photo',
     ];
 
     protected $casts = [

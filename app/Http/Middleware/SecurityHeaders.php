@@ -30,7 +30,7 @@ class SecurityHeaders
                 "style-src 'self' https://fonts.googleapis.com",
                 "style-src-attr 'unsafe-inline'",
                 "font-src 'self' https://fonts.gstatic.com",
-                "img-src 'self' data:",
+                "img-src 'self' data: https://cdn.jsdelivr.net",
                 "connect-src 'self'",
                 "object-src 'none'",
                 "base-uri 'self'",

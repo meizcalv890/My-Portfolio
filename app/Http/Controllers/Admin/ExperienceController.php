@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Experience;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 
 class ExperienceController extends Controller
 {
@@ -18,6 +20,8 @@ class ExperienceController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'description' => 'nullable|max:3000',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'remove_photo' => 'nullable|boolean',
         ];
     }
 
@@ -35,7 +39,15 @@ class ExperienceController extends Controller
 
     public function store(Request $request)
     {
-        Experience::create($request->validate($this->rules()));
+        $data = $request->validate($this->rules());
+
+        $attrs = Arr::except($data, ['photo', 'remove_photo']);
+        if ($request->hasFile('photo')) {
+            $attrs['photo'] = $request->file('photo')->store('experiences', 'public');
+        }
+
+        Experience::create($attrs);
+
         return redirect()->route('admin.experiences.index')->with('success', 'Data ditambahkan');
     }
 
@@ -46,13 +58,32 @@ class ExperienceController extends Controller
 
     public function update(Request $request, Experience $experience)
     {
-        $experience->update($request->validate($this->rules()));
+        $data = $request->validate($this->rules());
+
+        $attrs = Arr::except($data, ['photo', 'remove_photo']);
+
+        if ($request->hasFile('photo')) {
+            if ($experience->photo) {
+                Storage::disk('public')->delete($experience->photo);
+            }
+            $attrs['photo'] = $request->file('photo')->store('experiences', 'public');
+        } elseif ($request->boolean('remove_photo') && $experience->photo) {
+            Storage::disk('public')->delete($experience->photo);
+            $attrs['photo'] = null;
+        }
+
+        $experience->update($attrs);
+
         return redirect()->route('admin.experiences.index')->with('success', 'Data diperbarui');
     }
 
     public function destroy(Experience $experience)
     {
+        if ($experience->photo) {
+            Storage::disk('public')->delete($experience->photo);
+        }
         $experience->delete();
+
         return redirect()->route('admin.experiences.index')->with('success', 'Data dihapus');
     }
 }

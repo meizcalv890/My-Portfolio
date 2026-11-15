@@ -10,7 +10,11 @@
       <p class="kicker rise inline-flex items-center gap-2">
         <span class="h-2 w-2 rounded-full bg-ink" aria-hidden="true"></span> Portofolio {{ date('Y') }}
       </p>
-      <h1 class="rise rise-2 mt-6 text-6xl font-semibold leading-[0.92] tracking-tighter text-balance sm:text-7xl md:text-8xl">{{ $profile->name }}</h1>
+      <h1 class="mt-6 text-6xl font-semibold leading-[0.92] tracking-tighter sm:text-7xl md:text-8xl">
+        @foreach(preg_split('/\s+/', trim($profile->name)) as $i => $word)
+        <span class="word"><span style="--d: {{ $i * 0.09 }}s">{{ $word }}</span></span>
+        @endforeach
+      </h1>
       @if($profile->headline)
       <p class="rise rise-3 mt-6 max-w-xl text-xl text-muted md:text-2xl">{{ $profile->headline }}</p>
       @endif
@@ -25,11 +29,13 @@
     </div>
 
     <div class="rise rise-2 mx-auto w-full max-w-xs md:col-span-4 md:mx-0 md:max-w-none">
-      @if($profile->photo)
-      <img src="{{ asset('storage/'.$profile->photo) }}" alt="Foto {{ $profile->name }}" class="aspect-[3/4] w-full border border-line object-cover">
-      @else
-      <div class="grid aspect-[3/4] w-full place-items-center border border-line bg-paper-2 text-8xl font-semibold text-muted/50" aria-hidden="true">{{ str($profile->name)->substr(0, 1)->upper() }}</div>
-      @endif
+      <div data-tilt class="tilt">
+        @if($profile->photo)
+        <img src="{{ asset('storage/'.$profile->photo) }}" alt="Foto {{ $profile->name }}" class="aspect-[3/4] w-full border border-line object-cover">
+        @else
+        <div class="grid aspect-[3/4] w-full place-items-center border border-line bg-paper-2 text-8xl font-semibold text-muted/50" aria-hidden="true">{{ str($profile->name)->substr(0, 1)->upper() }}</div>
+        @endif
+      </div>
     </div>
   </div>
 
@@ -37,7 +43,7 @@
   @php
   $hasLinks = $profile->github || $profile->linkedin || $profile->instagram;
   @endphp
-  <dl class="mt-16 grid divide-y divide-line border-y border-ink md:grid-cols-3 md:divide-x md:divide-y-0">
+  <dl class="reveal mt-16 grid divide-y divide-line border-y border-ink md:grid-cols-3 md:divide-x md:divide-y-0">
     <div class="py-5 md:pr-6">
       <dt class="label">Status</dt>
       <dd class="mt-2">
@@ -72,7 +78,7 @@
 
 {{-- 01 PROYEK --}}
 <section id="proyek" class="scroll-mt-20 py-16">
-  <div class="flex flex-wrap items-end justify-between gap-6">
+  <div class="reveal flex flex-wrap items-end justify-between gap-6">
     <div>
       <p class="kicker">01 / Karya</p>
       <h2 class="section-title mt-3">Karya terpilih</h2>
@@ -98,10 +104,10 @@
 
   <div class="mt-10 grid gap-x-8 gap-y-14 md:grid-cols-2">
     @forelse($projects as $p)
-    <a href="{{ route('projects.show', $p) }}" class="group block">
-      <div class="aspect-[16/10] overflow-hidden border border-line bg-paper-2">
+    <a href="{{ route('projects.show', $p) }}" class="reveal group block" style="--d: {{ ($loop->index % 2) * 0.1 }}s">
+      <div data-cursor="Lihat" class="aspect-[16/10] overflow-hidden border border-line bg-paper-2">
         @if($p->image)
-        <img src="{{ asset('storage/'.$p->image) }}" alt="Cuplikan proyek {{ $p->title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]">
+        <img src="{{ asset('storage/'.$p->image) }}" alt="Cuplikan proyek {{ $p->title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]">
         @else
         <div class="grid h-full place-items-center text-6xl font-semibold text-muted/40" aria-hidden="true">{{ str($p->title)->substr(0, 1)->upper() }}</div>
         @endif
@@ -138,11 +144,11 @@
 {{-- 02 TENTANG --}}
 <section id="tentang" class="scroll-mt-20 border-t border-line py-16">
   <div class="grid gap-8 md:grid-cols-12">
-    <div class="md:col-span-4">
+    <div class="reveal md:col-span-4">
       <p class="kicker">02 / Tentang</p>
       <h2 class="section-title mt-3">Sedikit tentang saya</h2>
     </div>
-    <div class="md:col-span-8">
+    <div class="reveal md:col-span-8" style="--d: .1s">
       @if($profile->about)
       <p class="whitespace-pre-line text-xl leading-relaxed md:text-2xl">{{ $profile->about }}</p>
       @else
@@ -160,53 +166,72 @@ $groups = collect([
 'Sehari-hari' => $skills->where('level', '>=', 70),
 'Cukup nyaman' => $skills->where('level', '>=', 40)->where('level', '<', 70), 'Sedang saya pelajari'=> $skills->where('level', '<', 40),
     ])->filter(fn ($g) => $g->isNotEmpty());
-    $cols = [1 => 'md:grid-cols-1', 2 => 'md:grid-cols-2', 3 => 'md:grid-cols-3'][max(1, $groups->count())];
     @endphp
     <section id="skill" class="scroll-mt-20 border-t border-line py-16">
-      <p class="kicker">03 / Skill</p>
-      <h2 class="section-title mt-3">Perangkat saya</h2>
-
-      @if($groups->isNotEmpty())
-      <div class="mt-10 grid divide-y divide-line border border-line md:divide-x md:divide-y-0 {{ $cols }}">
-        @foreach($groups as $label => $items)
-        <div class="p-6">
-          <h3 class="label !font-mono">{{ $label }}</h3>
-          <ul class="mt-5 space-y-2 text-xl font-medium">
-            @foreach($items as $s)<li>{{ $s->name }}</li>@endforeach
-          </ul>
-        </div>
-        @endforeach
+      <div class="reveal">
+        <p class="kicker">03 / Skill</p>
+        <h2 class="section-title mt-3">Perangkat saya</h2>
       </div>
-      @else
+
+      @forelse($groups as $label => $items)
+      <div class="mt-10">
+        <h3 class="label !font-mono">{{ $label }} <span class="text-muted/60">({{ $items->count() }})</span></h3>
+        <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          @foreach($items as $s)
+          <li class="reveal" style="--d: {{ ($loop->index % 4) * 0.07 }}s">
+            <div class="skill-tile flex items-center gap-4 border border-line bg-white p-4 transition duration-300 hover:-translate-y-1 hover:border-ink hover:shadow-lg">
+              <span class="grid h-12 w-12 shrink-0 place-items-center bg-paper-2">
+                @if($s->logo_url)
+                <img src="{{ $s->logo_url }}" alt="" loading="lazy" data-fallback class="logo-img h-7 w-7 object-contain">
+                @endif
+                <span class="logo-letter text-lg font-semibold text-muted {{ $s->logo_url ? 'hidden' : '' }}" aria-hidden="true">{{ str($s->name)->substr(0, 1)->upper() }}</span>
+              </span>
+              <span class="font-medium">{{ $s->name }}</span>
+            </div>
+          </li>
+          @endforeach
+        </ul>
+      </div>
+      @empty
       <div class="mt-10 border border-dashed border-line p-12 text-center text-muted">Belum ada skill.</div>
-      @endif
+      @endforelse
     </section>
 
     {{-- 04 PENGALAMAN --}}
     @if($experiences->isNotEmpty())
     <section id="pengalaman" class="scroll-mt-20 border-t border-line py-16">
-      <p class="kicker">04 / Perjalanan</p>
-      <h2 class="section-title mt-3">Pengalaman &amp; pendidikan</h2>
+      <div class="reveal">
+        <p class="kicker">04 / Perjalanan</p>
+        <h2 class="section-title mt-3">Pengalaman &amp; pendidikan</h2>
+      </div>
 
       @foreach(['work' => 'Pengalaman', 'education' => 'Pendidikan'] as $type => $label)
       @php
-        $items = $experiences->where('type', $type);
+      $items = $experiences->where('type', $type);
       @endphp
       @if($items->isNotEmpty())
       <div class="mt-12">
         <h3 class="label !font-mono">{{ $label }}</h3>
         <ol class="mt-4 border-t border-ink">
           @foreach($items as $e)
-          <li class="grid gap-2 border-b border-line py-6 md:grid-cols-12">
+          <li class="reveal grid gap-3 border-b border-line py-6 md:grid-cols-12">
             <p class="font-mono text-sm text-muted md:col-span-3">
               {{ $e->start_date->translatedFormat('M Y') }} &ndash; {{ $e->end_date ? $e->end_date->translatedFormat('M Y') : 'Sekarang' }}
             </p>
-            <div class="md:col-span-9">
-              <h4 class="text-xl font-semibold">{{ $e->title }}</h4>
-              <p class="text-muted">{{ $e->organization }}@if($e->location), {{ $e->location }}@endif</p>
-              @if($e->description)
-              <p class="mt-3 max-w-2xl whitespace-pre-line leading-relaxed">{{ $e->description }}</p>
+            <div class="flex gap-5 md:col-span-9">
+              @if($e->photo)
+              <button type="button" data-zoom="{{ asset('storage/'.$e->photo) }}" aria-label="Perbesar foto {{ $e->title }}"
+                class="h-20 w-20 shrink-0 cursor-zoom-in overflow-hidden border border-line">
+                <img src="{{ asset('storage/'.$e->photo) }}" alt="" loading="lazy" class="h-full w-full object-cover transition duration-300 hover:scale-110">
+              </button>
               @endif
+              <div>
+                <h4 class="text-xl font-semibold">{{ $e->title }}</h4>
+                <p class="text-muted">{{ $e->organization }}@if($e->location), {{ $e->location }}@endif</p>
+                @if($e->description)
+                <p class="mt-3 max-w-2xl whitespace-pre-line leading-relaxed">{{ $e->description }}</p>
+                @endif
+              </div>
             </div>
           </li>
           @endforeach
@@ -219,7 +244,7 @@ $groups = collect([
 
     {{-- 05 KONTAK (blok hitam) --}}
     <section id="kontak" class="scroll-mt-20 py-16">
-      <div class="bg-ink p-8 text-white md:p-14">
+      <div class="reveal bg-ink p-8 text-white md:p-14">
         <div class="grid gap-12 md:grid-cols-12">
           <div class="md:col-span-6">
             <p class="kicker text-white/60">05 / Kontak</p>
