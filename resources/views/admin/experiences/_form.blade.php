@@ -21,12 +21,14 @@
   </div>
   <div class="grid grid-cols-2 gap-3">
     <div>
-      <label for="start_date" class="label">Mulai</label>
-      <input id="start_date" type="date" name="start_date" value="{{ old('start_date', isset($experience) ? $experience->start_date?->format('Y-m-d') : '') }}" required class="field">
+      <label for="start_year" class="label">Tahun mulai</label>
+      <input id="start_year" type="number" name="start_year" min="1950" max="{{ now()->year + 1 }}" placeholder="2023" required
+        value="{{ old('start_year', isset($experience) ? $experience->start_date?->format('Y') : '') }}" class="field">
     </div>
     <div>
-      <label for="end_date" class="label">Selesai (kosong = masih berlangsung)</label>
-      <input id="end_date" type="date" name="end_date" value="{{ old('end_date', isset($experience) ? $experience->end_date?->format('Y-m-d') : '') }}" class="field">
+      <label for="end_year" class="label">Tahun selesai (kosong = masih berlangsung)</label>
+      <input id="end_year" type="number" name="end_year" min="1950" max="{{ now()->year + 1 }}" placeholder="2025"
+        value="{{ old('end_year', isset($experience) ? $experience->end_date?->format('Y') : '') }}" class="field">
     </div>
   </div>
   <div>

@@ -105,7 +105,7 @@
   <div class="mt-10 grid gap-x-8 gap-y-14 md:grid-cols-2">
     @forelse($projects as $p)
     <a href="{{ route('projects.show', $p) }}" class="reveal group block" style="--d: {{ ($loop->index % 2) * 0.1 }}s">
-      <div data-cursor="Lihat" class="aspect-[16/10] overflow-hidden border border-line bg-paper-2">
+      <div class="aspect-[16/10] overflow-hidden border border-line bg-paper-2">
         @if($p->image)
         <img src="{{ asset('storage/'.$p->image) }}" alt="Cuplikan proyek {{ $p->title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]">
         @else

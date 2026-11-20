@@ -12,17 +12,29 @@ class ExperienceController extends Controller
 {
     private function rules(): array
     {
+        $max = now()->year + 1;
+
         return [
             'type' => 'required|in:work,education',
             'title' => 'required|max:150',
             'organization' => 'required|max:150',
             'location' => 'nullable|max:100',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'start_year' => "required|integer|min:1950|max:{$max}",
+            'end_year' => "nullable|integer|min:1950|max:{$max}|gte:start_year",
             'description' => 'nullable|max:3000',
             'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'remove_photo' => 'nullable|boolean',
         ];
+    }
+
+    /** Ubah tahun dari form menjadi kolom tanggal di database. */
+    private function attributes(array $data): array
+    {
+        $attrs = Arr::except($data, ['photo', 'remove_photo', 'start_year', 'end_year']);
+        $attrs['start_date'] = $data['start_year'] . '-01-01';
+        $attrs['end_date'] = ! empty($data['end_year']) ? $data['end_year'] . '-12-31' : null;
+
+        return $attrs;
     }
 
     public function index()
@@ -41,7 +53,7 @@ class ExperienceController extends Controller
     {
         $data = $request->validate($this->rules());
 
-        $attrs = Arr::except($data, ['photo', 'remove_photo']);
+        $attrs = $this->attributes($data);
         if ($request->hasFile('photo')) {
             $attrs['photo'] = $request->file('photo')->store('experiences', 'public');
         }
@@ -60,7 +72,7 @@ class ExperienceController extends Controller
     {
         $data = $request->validate($this->rules());
 
-        $attrs = Arr::except($data, ['photo', 'remove_photo']);
+        $attrs = $this->attributes($data);
 
         if ($request->hasFile('photo')) {
             if ($experience->photo) {

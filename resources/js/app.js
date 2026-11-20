@@ -104,43 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Label yang mengikuti kursor di elemen [data-cursor]
-    const label = document.getElementById("cursor-label");
-    if (label && finePointer) {
-        let x = 0;
-        let y = 0;
-        let frame = null;
-        document.addEventListener("mousemove", (e) => {
-            x = e.clientX;
-            y = e.clientY;
-            if (frame) return;
-            frame = requestAnimationFrame(() => {
-                label.style.transform =
-                    "translate3d(" + x + "px," + y + "px,0)";
-                frame = null;
-            });
-        });
-        document.addEventListener("mouseover", (e) => {
-            const target = e.target.closest
-                ? e.target.closest("[data-cursor]")
-                : null;
-            if (target) {
-                label.textContent = target.dataset.cursor || "Lihat";
-                label.classList.add("on");
-            }
-        });
-        document.addEventListener("mouseout", (e) => {
-            const from = e.target.closest
-                ? e.target.closest("[data-cursor]")
-                : null;
-            const to =
-                e.relatedTarget && e.relatedTarget.closest
-                    ? e.relatedTarget.closest("[data-cursor]")
-                    : null;
-            if (from && !to) label.classList.remove("on");
-        });
-    }
-
     // Lightbox untuk elemen [data-zoom]
     const box = document.getElementById("lightbox");
     const boxImg = document.getElementById("lightbox-img");

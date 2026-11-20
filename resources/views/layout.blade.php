@@ -97,7 +97,6 @@
     </div>
   </footer>
 
-  <div id="cursor-label" class="cursor-label" aria-hidden="true">Lihat</div>
 
   <a href="#" id="to-top" aria-label="Kembali ke atas" data-show="false"
     class="fixed bottom-5 right-5 z-40 grid h-11 w-11 place-items-center rounded-full bg-ink text-paper opacity-0 pointer-events-none transition hover:bg-neutral-700 data-[show=true]:pointer-events-auto data-[show=true]:opacity-100">&uarr;</a>

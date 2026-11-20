@@ -123,37 +123,12 @@
         will-change: transform;
     }
 
-    /* label yang mengikuti kursor */
-    .cursor-label {
-        position: fixed;
-        left: 0;
-        top: 0;
-        z-index: 70;
-        display: grid;
-        place-items: center;
-        width: 76px;
-        height: 76px;
-        margin: -38px 0 0 -38px;
-        border-radius: 9999px;
-        background: var(--color-ink);
-        color: var(--color-paper);
-        font-family: var(--font-mono);
-        font-size: 11px;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        pointer-events: none;
-        opacity: 0;
-        scale: .4;
-        transition: opacity .2s, scale .2s;
-    }
-    .cursor-label.on { opacity: 1; scale: 1; }
 
     /* logo skill: abu-abu, berwarna saat di-hover */
     .logo-img { transition: filter .3s, opacity .3s, transform .3s; }
 }
 
 @media (hover: hover) and (pointer: fine) {
-    [data-cursor] { cursor: none; }
     .logo-img { filter: grayscale(1); opacity: .8; }
     .skill-tile:hover .logo-img { filter: none; opacity: 1; transform: scale(1.12); }
 }
